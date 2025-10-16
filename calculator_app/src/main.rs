@@ -1,4 +1,7 @@
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::{
+    logger::tracing::{self, info},
+    prelude::*,
+};
 use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::{One, Zero};
@@ -14,6 +17,21 @@ pub enum Value {
 }
 
 use std::fmt;
+
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Value::Int(i) => write!(f, "{i}"),
+            Value::Rat(r) => {
+                if *r.denom() == BigInt::one() {
+                    write!(f, "{}", r.numer())
+                } else {
+                    write!(f, "{r}")
+                }
+            }
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum CalcError {
@@ -53,7 +71,7 @@ impl Op {
         match c {
             '+' => Some(Op::Add),
             '-' => Some(Op::Sub),
-            '*' | '×' => Some(Op::Mul),
+            '*' | 'x' => Some(Op::Mul),
             '/' | '÷' => Some(Op::Div),
             _ => None,
         }
@@ -78,7 +96,7 @@ impl fmt::Display for Op {
         let s = match self {
             Op::Add => "+",
             Op::Sub => "-",
-            Op::Mul => "×",
+            Op::Mul => "x",
             Op::Div => "÷",
         };
         write!(f, "{s}")
@@ -150,13 +168,16 @@ pub fn Calculator() -> Element {
 							                    current_operator_signal.set("".to_string())
 							                }
 							            } else {
+							                tracing::debug!("Setting current value to {}", v);
 							                current_value_signal.set(v.to_string())
 							            }
 							        }
 							    } else {
 							        if !current_operator_signal().is_empty() {
 							            current_value_signal
-							                .set(current_value_signal() + &current_operator_signal());
+							                .set(
+							                    current_value_signal() + " " + &current_operator_signal() + " ",
+							                );
 							            current_operator_signal.set("".to_string())
 							        }
 							        current_value_signal.set(current_value_signal() + v)
@@ -243,7 +264,46 @@ pub fn Calculator() -> Element {
 							onclick: move |_| {
 							    current_operator_signal.set("".to_string());
 							    decimal_signal.set(false);
-							    todo!();
+							    let binding = current_value_signal();
+							    let tokens: Vec<&str> = binding.split_whitespace().collect();
+							    tracing::debug!("Tokens: {:?}", tokens);
+							    tracing::debug!("Token count: {}", tokens.len());
+							    if tokens.len() >= 3 {
+							        let mut iter = tokens.iter();
+							        let mut acc = match parse_number(iter.next().unwrap()) {
+							            Ok(v) => v,
+							            Err(e) => {
+							                result_signal.set(e.to_string());
+							                return;
+							            }
+							        };
+							        while let (Some(op_str), Some(num_str)) = (iter.next(), iter.next()) {
+							            let op = match Op::from_char(op_str.chars().next().unwrap()) {
+							                Some(o) => o,
+							                None => {
+							                    result_signal.set(format!("invalid operator: '{op_str}'"));
+							                    return;
+							                }
+							            };
+							            let num = match parse_number(num_str) {
+							                Ok(v) => v,
+							                Err(e) => {
+							                    result_signal.set(e.to_string());
+							                    return;
+							                }
+							            };
+							            match eval_binop(acc, op, num) {
+							                Ok(v) => acc = v,
+							                Err(e) => {
+							                    result_signal.set(e.to_string());
+							                    return;
+							                }
+							            }
+							        }
+							        result_signal.set(acc.to_string());
+							    } else {
+							        result_signal.set(current_value_signal().to_string());
+							    }
 							},
 							"{value}"
 						}
