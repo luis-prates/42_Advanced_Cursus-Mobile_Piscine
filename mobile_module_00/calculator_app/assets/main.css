@@ -1,0 +1,98 @@
+/* App-wide styling */
+html, body {
+    /* background-color: #0e0e0e; */
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* #main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+} */
+
+
+.app-bar {
+    height: 12vh;
+    background-color: #607d8b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: sans-serif;
+	/* position: fixed; */
+	top: 0;
+	width: 100%;
+	z-index: 100;
+}
+
+.app-bar__title {
+    font-size: 20px;
+    padding: 0 16px;
+    font-weight: bold;
+}
+
+.calculator {
+	display: flex;
+	flex-direction: column;
+	height: 88vh;
+}
+
+.text-field-container {
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+	height: 40vh;
+	background-color: #37474f;
+	color: #57717e;
+    /* margin: 12px 0; */
+}
+
+.text-field-container label {
+    font-size: 14px;
+    color: #333;
+}
+
+.text-display {
+    padding: 4px 12px;
+    font-size: 16px;
+    user-select: text;
+    cursor: default;
+	text-align: end;
+}
+
+#buttons {
+	flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 3 columns */
+    grid-auto-rows: 1fr;
+    justify-content: center;
+	background-color: #607d8b;
+	/* height: max-content; */
+    /* gap: 20px; */
+    /* padding-top: 20px; */
+    /* padding-bottom: 20px; */
+}
+
+.grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: medium;
+    background-color: inherit;
+	border: none;
+}
+
+.grid-item.reset {
+	color: rgba(255, 0, 0, 0.637)
+}
+
+.grid-item.operator {
+	color: white;
+}

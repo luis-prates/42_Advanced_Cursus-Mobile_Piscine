@@ -1,0 +1,31 @@
+[package]
+name = "calculator_app"
+version = "0.1.0"
+authors = ["Luis Prates <luis.prates24@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dioxus = { version = "0.6.0", features = ["fullstack"] }
+num-bigint = "0.4"
+num-rational = "0.4"
+num-traits = "0.2"   # for generic numeric traits
+
+[features]
+default = ["desktop"]
+web = ["dioxus/web"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"

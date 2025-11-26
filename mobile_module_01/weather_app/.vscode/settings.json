@@ -1,0 +1,11 @@
+{
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true
+    },
+    "rust-analyzer.rustfmt.overrideCommand": [
+        "powershell",
+        "-command",
+        "rustfmt --edition 2024 --emit stdout | dx fmt -f -"
+    ]
+}
